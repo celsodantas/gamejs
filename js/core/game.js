@@ -22,11 +22,8 @@ Game.prototype = {
 		this._renderer.setSize( window.innerWidth, window.innerHeight );
 		document.getElementById('container').appendChild(this._renderer.domElement);
 
-		// add Stats.js - https://github.com/mrdoob/stats.js
-		this._stats = new Stats();
-		this._stats.domElement.style.position	= 'absolute';
-		this._stats.domElement.style.bottom	= '0px';
-		document.body.appendChild( this._stats.domElement );
+		this._stats = new Game.Stats();
+		this._stats.init();
 
 		// create a scene
 		this._scene = new THREE.Scene();
@@ -57,6 +54,7 @@ Game.prototype = {
 	{
 		this.requestAnimationFrame();
 		
+		this._stats.update();
 		this._renderer.render(this._scene, this._camera);
 	},
 	
