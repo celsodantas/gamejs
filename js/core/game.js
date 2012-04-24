@@ -30,10 +30,13 @@ Game.prototype = {
 	
 	render: function() 
 	{
-		this.requestAnimationFrame();
+		this._player.animate(Clock.getSeconds());
 		
 		this._stats.update();
+		
 		this._renderer.render(this._scene, this._camera);
+		this.requestAnimationFrame();
+		Clock.tick();
 	},
 	
 	requestAnimationFrame: function() {
@@ -65,7 +68,7 @@ Game.prototype = {
 				antialias				: true,	// to get smoother output
 				preserveDrawingBuffer	: true	// to allow screenshot
 			});
-			this._renderer.setClearColorHex( 0x000000, 1 );
+			this._renderer.setClearColorHex( 0xccccc, 1 );
 		}else{
 			this._renderer = new THREE.CanvasRenderer();
 		}
@@ -77,7 +80,7 @@ Game.prototype = {
 	initCamera: function() {
 		//camera = new THREE.OrthographicCamera( window.innerWidth / - 2, window.innerWidth / 2, window.innerHeight / 2, window.innerHeight / - 2, -2000, 1000 );
 		this._camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 1, 10000 );
-		this._camera.position.set(0, 0, 5);
+		this._camera.position.set(0, 0, 13);
 		this._camera.lookAt(new THREE.Vector3(0, 0, 0));
 		this._scene.add(this._camera);
 	},

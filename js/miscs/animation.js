@@ -32,5 +32,9 @@ Game.Base.Animation.prototype = {
 
     getSprite: function() {
         return this._sprites.getOffset(this._frames[this._frameIndex].sprite);
-    }
+    },
+
+	reset: function() {
+		this._frameIndex = 0;
+	}
 }
