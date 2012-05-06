@@ -20,7 +20,7 @@ Game.Player.prototype =
 	_speed: 
 	{
 		walk: 0.05,
-		jump: 0.2,
+		jump: 0.3,
 	},
 	
 	_velocity: 
@@ -112,8 +112,17 @@ Game.Player.prototype =
 		} 
 		else 
 		{
-			this._velocity.y = 0
+			this._velocity.y = 0;
 			this._jumping = false;
+		}
+		
+		// Atrito
+		if (this.notInTheAir())
+		{
+			if (this._velocity.x > 0)
+				this._velocity.x -= this._speed.walk;
+			else if (this._velocity.x < 0)
+				this._velocity.x += this._speed.walk;
 		}
 		
 		//
@@ -122,13 +131,23 @@ Game.Player.prototype =
 		
 		if (Keyboard.pressed("d"))
 		{
-			this._mesh.position.setX( this._mesh.position.x + this._speed.walk )
-			this.animations.walk_right.call(this, dTime, this._state);
+			this._direction = 'right';
+			
+			if (this.notInTheAir()) 
+			{
+				this._velocity.x = this._speed.walk;
+				this.animations.walk_right.call(this, dTime, this._state);
+			}
 		} 
 		else if (Keyboard.pressed("a")) 
 		{
-			this._mesh.position.setX( this._mesh.position.x - this._speed.walk )
-			this.animations.walk_left.call(this, dTime, this._state);
+			this._direction = 'left';
+			
+			if (this.notInTheAir()) 
+			{	
+				this._velocity.x = this._speed.walk * (-1);
+				this.animations.walk_left.call(this, dTime, this._state);
+			}
 		} 
 		else 
 		{
@@ -152,6 +171,18 @@ Game.Player.prototype =
 			else 
 				this.animations.stand_left.call(this, dTime);
 		}
+		
+		this._mesh.position.setX( this._mesh.position.x + this._velocity.x );
+	},
+	
+	inTheAir: function() 
+	{
+		return this.isJumping();
+	},
+	
+	notInTheAir: function() 
+	{
+		return !this.inTheAir();
 	},
 	
 	isJumping: function() 

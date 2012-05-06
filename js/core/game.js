@@ -80,7 +80,7 @@ Game.prototype = {
 	initCamera: function() {
 		//camera = new THREE.OrthographicCamera( window.innerWidth / - 2, window.innerWidth / 2, window.innerHeight / 2, window.innerHeight / - 2, -2000, 1000 );
 		this._camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 1, 10000 );
-		this._camera.position.set(0, 0, 13);
+		this._camera.position.set(0, 0, 15);
 		this._camera.lookAt(new THREE.Vector3(0, 0, 0));
 		this._scene.add(this._camera);
 	},
