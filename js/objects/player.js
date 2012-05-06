@@ -2,22 +2,29 @@
 Game.Base.Physics = function() {};
 Game.Base.Physics._gravity = 0.01;
 
-Game.Player = function (SpriteClass, AnimationClass) {
+Game.Player = function (SpriteClass, AnimationClass) 
+{
 	this.init(SpriteClass, AnimationClass);
 }
 
-Game.Player.prototype = {
+Game.Player.prototype = 
+{
 	_mesh: null,
 	_material: null,
 	_direction: "right",
-	_state: "standing",
 	
-	_speed: {
+	_state: "standing",
+	_jumping: false,
+	_direction: 'right',
+	
+	_speed: 
+	{
 		walk: 0.05,
 		jump: 0.2,
 	},
 	
-	_velocity: {
+	_velocity: 
+	{
 		x: 0,
 		y: 0
 	},
@@ -46,13 +53,21 @@ Game.Player.prototype = {
 			height: 1770,
 			sprites: [
 				{ name: "stand_right", 		x: 0.5, 		y: 0.0		},
-				{ name: "stand_left", 		x: 0.1, 		y: 0.0		},
+				{ name: "stand_left", 		x: 0.435, 		y: 0.0		},
+				
 				{ name: "walk_right_01",	x: 0.5, 		y: 0.0288	},
 				{ name: "walk_right_02",	x: 0.581, 		y: 0.03		},
 				{ name: "walk_right_03",	x: 0.648, 		y: 0.028	},
 				{ name: "walk_right_04",	x: 0.56689, 	y: 0.0		},
 				{ name: "walk_right_05",	x: 0.62789, 	y: 0.0		},
 				{ name: "walk_right_06",	x: 0.70279, 	y: 0.0		},
+				
+				{ name: "walk_left_01", 	x: 0.5, 		y: 0.0288	},
+				{ name: "walk_left_02", 	x: 0.581, 		y: 0.03		},
+				{ name: "walk_left_03", 	x: 0.648, 		y: 0.028	},
+				{ name: "walk_left_04", 	x: 0.56689, 	y: 0.0		},
+				{ name: "walk_left_05", 	x: 0.62789, 	y: 0.0		},
+				{ name: "walk_left_06", 	x: 0.70279, 	y: 0.0		},
 			]
 		});
 		
@@ -63,6 +78,15 @@ Game.Player.prototype = {
 			{ sprite: "walk_right_04", 	time: 0.11 },
 			{ sprite: "walk_right_05", 	time: 0.11 },
 			{ sprite: "walk_right_06", 	time: 0.11 },
+		], this._sprites);
+		
+		this._walk_left = new AnimationClass([
+			{ sprite: "walk_left_01", 	time: 0.11 },
+			{ sprite: "walk_left_02", 	time: 0.11 },
+			{ sprite: "walk_left_03", 	time: 0.11 },
+			{ sprite: "walk_left_04", 	time: 0.11 },
+			{ sprite: "walk_left_05", 	time: 0.11 },
+			{ sprite: "walk_left_06", 	time: 0.11 },
 		], this._sprites);
 		
 		this._stand_right = new AnimationClass([
@@ -77,6 +101,7 @@ Game.Player.prototype = {
 	animate: function(dTime)
 	{
 		this._mesh.position.setY( this._mesh.position.y + this._velocity.y )
+		
 		//
 		// Physics
 		//
@@ -88,6 +113,7 @@ Game.Player.prototype = {
 		else 
 		{
 			this._velocity.y = 0
+			this._jumping = false;
 		}
 		
 		//
@@ -99,48 +125,83 @@ Game.Player.prototype = {
 			this._mesh.position.setX( this._mesh.position.x + this._speed.walk )
 			this.animations.walk_right.call(this, dTime, this._state);
 		} 
+		else if (Keyboard.pressed("a")) 
+		{
+			this._mesh.position.setX( this._mesh.position.x - this._speed.walk )
+			this.animations.walk_left.call(this, dTime, this._state);
+		} 
+		else 
+		{
+			this._state = 'standing';
+		}
 		
 		if (Keyboard.pressed("space"))
 		{
-			if (this._state != "jumping")
+			if (this.isNotJumping())
 			{
 				this._state = "jumping";
+				this._jumping = true;
 				this._velocity.y = this._speed.jump;
 			}
 		}
 
-		
-		// {
-		// 	if (this._direction = "right")
-		// 		this.animations.stand_right.call(this, dTime);
-		// 	else
-		// 		this.animations.stand_left.call(this, dTime);
-		// }
+		if (this._state == 'standing')
+		{
+			if (this._direction == 'right')
+				this.animations.stand_right.call(this, dTime);
+			else 
+				this.animations.stand_left.call(this, dTime);
+		}
 	},
 	
-	animations: {
-		walk_right: function(dTime, state) {
-			if (state != "walking_right") this._walk_right.reset();
+	isJumping: function() 
+	{
+		return this._jumping == true
+	},
+	
+	isNotJumping: function() 
+	{
+		return !this.isJumping();
+	},
+	
+	animations: 
+	{
+		walk_right: function(dTime, state) 
+		{
+			if (state != "walking") this._walk_right.reset();
 			
-			this._state = "walking_right";
+			this._state = "walking";
 			this._direction = "right";
 			
 			this._walk_right.animate(dTime);
 			this.animations.positionate_sprite.call(this, this._walk_right.getSprite());
 		},
-		stand_right: function(dTime) {
-			this._state = "standing_right";
+		walk_left: function(dTime, state) 
+		{
+			if (state != "walking") this._walk_left.reset();
+			
+			this._state = "walking";
+			this._direction = "left";
+			
+			this._walk_left.animate(dTime);
+			this.animations.positionate_sprite.call(this, this._walk_left.getSprite());
+		},
+		stand_right: function(dTime) 
+		{
+			this._state = "standing";
 			
 			this._stand_right.animate(dTime);
 			this.animations.positionate_sprite.call(this, this._stand_right.getSprite());
 		},
-		stand_left: function(dTime) {
-			console.log("stand_left")
-			this._stand_left.animate(dTime);
+		stand_left: function(dTime) 
+		{
+			this._state = "standing";
 			
+			this._stand_left.animate(dTime);
 			this.animations.positionate_sprite.call(this, this._stand_left.getSprite());
 		},
-		positionate_sprite: function(sprite) {
+		positionate_sprite: function(sprite) 
+		{
 			this._material.map.offset.x = sprite.x;
 			this._material.map.offset.y = sprite.y;
 		}
