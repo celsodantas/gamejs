@@ -30,7 +30,7 @@ Game.prototype = {
 	
 	render: function() 
 	{
-		this._player.animate(Clock.getSeconds());
+		this._player.update(Clock.getSeconds());
 		
 		this._stats.update();
 		

@@ -20,7 +20,7 @@ Game.Player.prototype =
 	_speed: 
 	{
 		walk: 0.05,
-		jump: 0.3,
+		jump: 0.23,
 	},
 	
 	_velocity: 
@@ -98,9 +98,9 @@ Game.Player.prototype =
 		], this._sprites);
 	},
 	
-	animate: function(dTime)
+	update: function(dTime)
 	{
-		this._mesh.position.setY( this._mesh.position.y + this._velocity.y )
+		
 		
 		//
 		// Physics
@@ -133,25 +133,25 @@ Game.Player.prototype =
 		{
 			this._direction = 'right';
 			
-			if (this.notInTheAir()) 
+			if (this.walkEnabled()) 
 			{
+				this._state 	= "walking";
 				this._velocity.x = this._speed.walk;
-				this.animations.walk_right.call(this, dTime, this._state);
 			}
 		} 
 		else if (Keyboard.pressed("a")) 
 		{
 			this._direction = 'left';
-			
-			if (this.notInTheAir()) 
+		
+			if (this.walkEnabled()) 
 			{	
+				this._state 	= "walking";
 				this._velocity.x = this._speed.walk * (-1);
-				this.animations.walk_left.call(this, dTime, this._state);
 			}
-		} 
+		}
 		else 
 		{
-			this._state = 'standing';
+			this._state = "standing";
 		}
 		
 		if (Keyboard.pressed("space"))
@@ -163,16 +163,16 @@ Game.Player.prototype =
 				this._velocity.y = this._speed.jump;
 			}
 		}
-
-		if (this._state == 'standing')
-		{
-			if (this._direction == 'right')
-				this.animations.stand_right.call(this, dTime);
-			else 
-				this.animations.stand_left.call(this, dTime);
-		}
 		
 		this._mesh.position.setX( this._mesh.position.x + this._velocity.x );
+		this._mesh.position.setY( this._mesh.position.y + this._velocity.y );
+		
+		this.animate(dTime);
+	},
+	
+	walkEnabled: function() 
+	{
+		return this.notInTheAir();
 	},
 	
 	inTheAir: function() 
@@ -195,14 +195,29 @@ Game.Player.prototype =
 		return !this.isJumping();
 	},
 	
+	animate: function(dTime) 
+	{
+		if (this._state == "walking")
+		{
+			if (this._direction == "right")
+				this.animations.walk_right.call(this, dTime, this._state);
+			else
+				this.animations.walk_left.call(this, dTime, this._state);
+		}
+		else if (this._state == 'standing')
+		{
+			if (this._direction == 'right')
+				this.animations.stand_right.call(this, dTime);
+			else 
+				this.animations.stand_left.call(this, dTime);
+		}
+	},
+	
 	animations: 
 	{
 		walk_right: function(dTime, state) 
 		{
 			if (state != "walking") this._walk_right.reset();
-			
-			this._state = "walking";
-			this._direction = "right";
 			
 			this._walk_right.animate(dTime);
 			this.animations.positionate_sprite.call(this, this._walk_right.getSprite());
@@ -211,23 +226,16 @@ Game.Player.prototype =
 		{
 			if (state != "walking") this._walk_left.reset();
 			
-			this._state = "walking";
-			this._direction = "left";
-			
 			this._walk_left.animate(dTime);
 			this.animations.positionate_sprite.call(this, this._walk_left.getSprite());
 		},
 		stand_right: function(dTime) 
 		{
-			this._state = "standing";
-			
 			this._stand_right.animate(dTime);
 			this.animations.positionate_sprite.call(this, this._stand_right.getSprite());
 		},
 		stand_left: function(dTime) 
 		{
-			this._state = "standing";
-			
 			this._stand_left.animate(dTime);
 			this.animations.positionate_sprite.call(this, this._stand_left.getSprite());
 		},
