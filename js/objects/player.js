@@ -17,6 +17,8 @@ Game.Player.prototype =
 	_jumping: false,
 	_direction: 'right',
 	
+	_scene: null,
+	
 	_speed: 
 	{
 		walk: 0.05,
@@ -29,8 +31,11 @@ Game.Player.prototype =
 		y: 0
 	},
 	
-	init: function(SpriteClass, AnimationClass) 
-	{	
+	init: function() 
+	{
+		var SpriteClass 	= Game.Base.SpriteSheet;
+		var AnimationClass 	= Game.Base.Animation;
+			
 		// Texture
 		this._material = new THREE.MeshBasicMaterial( { 
 			map : THREE.ImageUtils.loadTexture("images/player_sprite.gif"), 
@@ -46,7 +51,7 @@ Game.Player.prototype =
 		
 		// Mesh
 		this._mesh = new THREE.Mesh(new THREE.PlaneGeometry(1, 1.2), this._material);
-		_mesh = this._mesh;
+
 		// Sprites
 		this._sprites = new SpriteClass({
 			width: 632,
@@ -101,7 +106,7 @@ Game.Player.prototype =
 	update: function(dTime)
 	{
 		
-		
+		// FIXME :: add this to physics module
 		//
 		// Physics
 		//
@@ -125,10 +130,13 @@ Game.Player.prototype =
 				this._velocity.x += this._speed.walk;
 		}
 		
-		//
-		// Keyboard
-		//
+		// **********
+		//  Keyboard
+		// **********
 		
+		//
+		// Movement
+		//
 		if (Keyboard.pressed("d"))
 		{
 			this._direction = 'right';
@@ -154,6 +162,9 @@ Game.Player.prototype =
 			this._state = "standing";
 		}
 		
+		//
+		// Jumping
+		// 
 		if (Keyboard.pressed("space"))
 		{
 			if (this.isNotJumping())
@@ -164,10 +175,34 @@ Game.Player.prototype =
 			}
 		}
 		
-		this._mesh.position.setX( this._mesh.position.x + this._velocity.x );
-		this._mesh.position.setY( this._mesh.position.y + this._velocity.y );
+		//
+		// Weapons
+		//
+		if (Keyboard.pressed("k"))
+		{	
+			var position = {
+				x: this.xPosition() + 0.5, 
+				y: this.yPosition() + 0.1,
+			};
+			
+			Game.Manager.ProjectileManager.createBullet(position, "right");
+		}
+		
+		this._mesh.position.setX( this.xPosition() + this._velocity.x );
+		this._mesh.position.setY( this.yPosition() + this._velocity.y );
+
 		
 		this.animate(dTime);
+	},
+	
+	xPosition: function() 
+	{
+		return this._mesh.position.x;
+	},
+	
+	yPosition: function() 
+	{
+		return this._mesh.position.y;
 	},
 	
 	walkEnabled: function() 

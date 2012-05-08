@@ -18,6 +18,9 @@ Game.prototype = {
 		// transparently support window resize
 		THREEx.WindowResize.bind(this._renderer, this._camera);
 		
+		// Loading managers
+		Game.Manager.ProjectileManager._scene = this._scene;
+		
 		return true;
 	},
 	
@@ -33,8 +36,10 @@ Game.prototype = {
 		this._player.update(Clock.getSeconds());
 		
 		this._stats.update();
+		this.updateManagers();
 		
 		this._renderer.render(this._scene, this._camera);
+		
 		this.requestAnimationFrame();
 		Clock.tick();
 	},
@@ -42,6 +47,11 @@ Game.prototype = {
 	requestAnimationFrame: function() {
 		var self = this;
 		requestAnimationFrame( function() { self.render() });
+	},
+	
+	updateManagers: function() 
+	{
+		Game.Manager.ProjectileManager.update();
 	},
 	
 	/*
@@ -86,7 +96,7 @@ Game.prototype = {
 	},
 	
 	initPlayer: function() {
-		this._player = new Game.Player(Game.Base.SpriteSheet, Game.Base.Animation);	
+		this._player = new Game.Player();	
 	},
 }
 
