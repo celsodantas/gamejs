@@ -31,10 +31,8 @@ Game.Projectile.prototype =
 		this._direction = direction;
 		this._velocity 	= velocity;
 		
-		console.log(this._velocity)
-		
 		// Fixing velocity direction
-		if (direction = "right")
+		if (direction == "right")
 		{
 			if (this._velocity.x < 0) 
 				this._velocity.x *= -1;

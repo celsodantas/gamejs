@@ -185,7 +185,7 @@ Game.Player.prototype =
 				y: this.yPosition() + 0.1,
 			};
 			
-			Game.Manager.ProjectileManager.createBullet(position, "right");
+			Game.Manager.ProjectileManager.createBullet(position, this._direction);
 		}
 		
 		this._mesh.position.setX( this.xPosition() + this._velocity.x );
@@ -193,7 +193,7 @@ Game.Player.prototype =
 
 		
 		this.animate(dTime);
-	},
+	},	
 	
 	xPosition: function() 
 	{
