@@ -12,6 +12,11 @@ Game.Player.prototype =
 	_mesh: null,
 	_material: null,
 	_direction: "right",
+	_dimentions:
+	{
+		height: 1.2,
+		width: 	1,
+	},
 	
 	_state: "standing",
 	_jumping: false,
@@ -50,7 +55,7 @@ Game.Player.prototype =
 		this._material.map.offset.x = 0.5;
 		
 		// Mesh
-		this._mesh = new THREE.Mesh(new THREE.PlaneGeometry(1, 1.2), this._material);
+		this._mesh = new THREE.Mesh(new THREE.PlaneGeometry(this._dimentions.width, this._dimentions.height), this._material);
 
 		// Sprites
 		this._sprites = new SpriteClass({
@@ -180,12 +185,18 @@ Game.Player.prototype =
 		//
 		if (Keyboard.pressed("k"))
 		{	
-			var position = {
-				x: this.xPosition() + 0.5, 
-				y: this.yPosition() + 0.1,
-			};
+			var position = { x: this.xPosition(), 	y: this.yPosition() };
+			var offset =   { x: 0.1, 				y: 0.1 	};
 			
-			Game.Manager.ProjectileManager.createBullet(position, this._direction);
+			Game.Manager.ProjectileManager.createBullet(position, this._direction, offset);
+		}
+		
+		if (Keyboard.pressed("m"))
+		{	
+			var position = { x: this.xPosition(), 	y: this.yPosition() };
+			var offset =   { x: 0.1, 				y: 0.1 	};
+
+			Game.Manager.ProjectileManager.createMissile(position, this._direction, offset);
 		}
 		
 		this._mesh.position.setX( this.xPosition() + this._velocity.x );

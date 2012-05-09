@@ -1,9 +1,11 @@
-Game.Projectile = function(position, direction, velocity) 
+if (Game.Weapon == undefined) Game.Weapon = function() {};
+
+Game.Weapon.Projectile = function(position, direction, velocity, offset) 
 {
-	this.init(position, direction, velocity);
+	this.init(position, direction, velocity, offset);
 };
 
-Game.Projectile.prototype = 
+Game.Weapon.Projectile.prototype = 
 {
 	_mesh: null,
 	_material: null,
@@ -14,34 +16,20 @@ Game.Projectile.prototype =
 	_createdAt: null,
 	_ttl: 5000,
 	
-	_speed: 
-	{
-		walk: 0.05,
-		jump: 0.23,
-	},
-	
 	_velocity: 
 	{
 		x: 0,
 		y: 0
 	},
 	
-	init: function(position, direction, velocity) 
+	init: function(position, direction, velocity, offset) 
 	{
 		this._direction = direction;
 		this._velocity 	= velocity;
+
+		if (!offset) { offset = {x: 0, y: 0}; }
 		
-		// Fixing velocity direction
-		if (direction == "right")
-		{
-			if (this._velocity.x < 0) 
-				this._velocity.x *= -1;
-		} 
-		else 
-		{
-			if (this._velocity.x > 0) 
-				this._velocity.x *= -1;
-		}
+		this.fixVelocityDirection(direction);
 			
 		// Texture
 		this._material = new THREE.MeshBasicMaterial( { color : "#fff"} );	
@@ -49,8 +37,8 @@ Game.Projectile.prototype =
 		// Mesh
 		this._mesh = new THREE.Mesh(new THREE.PlaneGeometry(0.22, 0.05), this._material);
 		
-		this._mesh.position.setX( position.x );
-		this._mesh.position.setY( position.y );
+		this._mesh.position.setX( position.x + (offset.x));
+		this._mesh.position.setY( position.y + (offset.y));
 		
 		this._createdAt = Clock.getTime();
 	},
@@ -65,5 +53,20 @@ Game.Projectile.prototype =
 	{
 		var now = Clock.getTime();
 		return (now - this._createdAt) > this._ttl;
+	},
+	
+	fixVelocityDirection: function(direction) 
+	{
+		// Fixing velocity direction
+		if (direction == "right")
+		{
+			if (this._velocity.x < 0) 	
+				this._velocity.x *= -1;
+		}
+		else 
+		{
+			if (this._velocity.x > 0) 	
+				this._velocity.x *= -1;
+		}
 	},
 }

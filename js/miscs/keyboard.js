@@ -12,6 +12,7 @@ var Keyboard = {
 		"a": 65,
 		
 		"k": 75,
+		"m": 77,
 		
 		"space": 32,
 		"esc": 27
